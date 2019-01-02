@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <title>Ponymote Studio</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="Ponymote Studio">
+    <meta name="author" content="rebane2001">
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Open+Sans');
+        @import url('https://fonts.googleapis.com/css?family=Lato');
+
+         html{
+             background-color: #333 
+        }
+         body {
+             font-family: Lato, Open Sans, Arial;
+             color: #FFF;
+             font-size: 16px;
+             margin: 2em auto;
+             max-width: 1600px;
+             padding: 1em;
+             line-height: 1.4;
+             text-align: justify 
+        }
+         a, a:visited {
+             color: #7BAE7F 
+        }
+         .numbox {
+             width: 60px;
+        }
+         .emote_preview{
+             pointer-events: none;
+             cursor: default;
+        }
+         .sp{
+             display: inline-block;
+             height: 0px;
+             padding-right: 100%;
+             width: 0px;
+        }
+    </style>
+    <style id="emotecss">
+    </style>
+</head>
+<body>
+    <h1>Ponymote Studio</h1>
+    <p><span style="font-size:0px">[](/abcookie)[](/sp)</span>This is a site made to help make BPM-compatible Reddit Ponymote CSS.<br>You first import your motesheets, then use the 'Add emote' button to add a bunch of emotes and set their settings properly.<br>You can save your project as a PMS file to continue working on it later, or you can save it as CSS and tags, so you can use them on Reddit and BPM.<br>If you think my code is garbage, feel free to submit pull requests on <a href="https://github.com/rebane2001/ponymote-studio">Github</a></p>
+    <h2>Motesheet upload</h2>
+    <input id="istl" type="file">
+    <div id="importedSpritesheets">
+    </div>
+    <h2>Create emotes</h2>
+    <button onClick="addNewEmote()" type="button">Add emote</button>
+    <button onClick="updateAllEmotes()" type="button">Update all</button>
+    <div id="emotes">
+    </div>
+    <h3>Tag cheatsheet</h3>
+    <p>+oc, +formatting, +equestriagirls, +canon, +hidden, +oldgen, +nonpony, +broken, +pinkiepipes</p>
+    <p>+zephyrbreeze, +treehugger, +grubber, +zecora, +karma, +stormking, +batpony, +capper, +caballeron, +photofinish, +daylightdarkle, +coloratura, +wildfire, +braeburn, +jappleack, +pinkiepie, +smolder, +fluttershy, +windywhistles, +carrottop, +sandbar, +vaportrail, +sugarcoat, +gummy, +stevenmagnet, +squidward, +snowdrop, +griffon, +derpy, +colgate, +fancypants, +doublediamond, +gallus, +vinylscratch, +somnambula, +maud, +ember, +flitter, +captaincelaeno, +cheerilee, +sweetiebelle, +discentia, +cocopommel, +pip, +ahuizotl, +sonatadusk, +littlepip, +twist, +flimandflam, +lotus, +otherpony, +scepter, +daringdo, +caketwins, +lightningdust, +moondancer, +indigozap, +stygian, +sunnyflare, +tempestshadow, +nightglider, +flurryheart, +owlowiscious, +silverstream, +rainbowdash, +dinky, +mistmane, +babseed, +mayor, +limestonepie, +gabby, +starlightglimmer, +lyra, +winona, +kirin, +milkyway, +yak, +starswirlthebearded, +partyfavor, +sillynumptie, +blossomforth, +sunsetshimmer, +dragon, +troubleshoes, +adagiodazzle, +sugarbelle, +rockhoof, +skystinger, +velvetremedy, +trixie, +daisy, +ariablaze, +misc, +grannysmith, +harshwhinny, +peachbottom, +roseluck, +princesscadance, +beautybrass, +spiderman, +flashmagnus, +angel, +spike, +shiningarmor, +flashsentry, +cloudchaser, +apathia, +villain, +pokemon, +broken, +kingsombra, +fleurdelis, +changeling, +soarin, +inkyrose, +princessskystar, +marblepie, +magemeadowbrook, +gilda, +sunburst, +spitfire, +thunderlane, +futashy, +princessluna, +ocpony, +silverspoon, +royalguard, +firefly, +foodmane, +applebloom, +bigmac, +applefritter, +lily, +rubypinch, +ocellus, +nsfw, +diamondtiara, +skyrunner, +tirek, +hoitytoity, +screwball, +ironwill, +calamity, +princesscelestia, +cockatrice, +queenchrysalis, +twilightsparkle, +cheesesandwich, +nightmaremoon, +maredowell, +nurseredheart, +bonbon, +songbirdserenade, +opalescence, +tank, +discord, +rarity, +medley, +murkynumberseven, +scootaloo, +eris, +octavia, +raynestorm, +berrypunch, +snipsandsnails, +principalcinch, +smooze, +soursweet, +browniebun, +surprise, +doctorwhooves, +blackjack, +lemonzest, +queennovo, +applejack, +yona, +echo, +crankydoodle</p>
+    <p>+sleeping, +drinking, +heart, +clap, +dealwithit, +mashup, +animote, +doctorwho, +headbop, +manspike, +salute, +siren, +tableflip, +mafia, +shadowbolt, +filly, +pbjt, +sunglasses, +pinkamina, +foe, +coin, +spider, +no, +cozy, +human, +shrug, +banana, +hovermote, +pony, +imagemacro, +questionable, +this, +fluffy, +gaming, +cuttershy, +equestriagirls, +shipping, +fun, +wetmane, +fsjal</p>
+    <h2>Save</h2>
+    <button onClick="saveCSS()" type="button">Save CSS</button>
+    <button onClick="saveTags()" type="button">Save tags</button>
+    <button onClick="savePMS()" type="button">Save PMS</button>
+    Load PMS: <input id="lpms" type="file">
+    <script>
+    //This code is quite a mess, I'm not even sure how I wrote it
+    //I hope my comments will help, feel free to pull request better looking code
+    
+    //Initialize two main variables
+    var spritesheets = {};
+    var emotes = {};
+    
+    //Emotes
+    function addNewEmote() { //Adds new emote with template values
+        //Template values, the random string is an unique ID for each mote to prevent conflicts and stuff
+        addEmote("emote_" + Math.random().toString(36).substr(2, 10), "", "", [70, 70], [0, 0], "%", "", "display: block;\nfloat: left");
+    }
+    
+    function addEmote(emoteid, name, spritesheet, size, offset, offsettype, tags, extracss) { //Adds new emote based on args
+        let emoteelem = document.createElement('div');
+        emoteelem.className = "emotediv";
+        emoteelem.id = emoteid;
+        emoteelem.innerHTML += '<a class="emote_preview" href="/' + name + '"></a><b>Name: </b><input type="text" class="emote_name" value="' + name + '"><br><b>Spritesheet:</b> <select class="emote_spritesheet">' + getSelect() + '</select><br><b>Size (px): </b> <input class="emote_xsize numbox" type="number" value="' + size[0] + '"><input class="emote_ysize numbox" type="number" value="' + size[1] + '"><br><b>Offset: </b> <input class="emote_xoffset numbox" type="number" value="' + offset[0] + '"><input class="emote_yoffset numbox" type="number" value="' + offset[1] + '"><select class="emote_offsettype"><option value="%">%</option><option value="px">px</option></select><br><b>Tags: </b><input type="text" class="emote_tags" value="' + tags + '"><br><b>Extra CSS:</b><br><textarea class="emote_extracss" rows="3" cols="16">' + extracss + '</textarea><br><button onClick="updateEmote(\'' + emoteid + '\')" type="button">Update</button><button onClick="removeEmote(\'' + emoteid + '\')" type="button">Remove</button><a href="/sp" class="sp"></a>';
+        document.getElementById("emotes").appendChild(emoteelem);
+        let emote = document.getElementById(emoteid);
+        //This part sets selects/dropdowns correctly
+        if (spritesheet != "")
+            emote.getElementsByClassName("emote_spritesheet")[0].value = spritesheet;
+        emote.getElementsByClassName("emote_offsettype")[0].value = offsettype;
+    }
+    
+    function updateAllEmotes() { //Updates all emotes
+        emotes = {}
+        allmotes = document.getElementById("emotes").children;
+        for (let i = 0; i < allmotes.length; i++) {
+            updateEmote(allmotes[i].id);
+        }
+    }
+    
+    function updateEmote(emoteid) { //Updates emote by storing their values from html and calling updateCSS
+        emotes[emoteid] = {}
+        let emote = document.getElementById(emoteid);
+        let emotedata = {
+            "name": emote.getElementsByClassName("emote_name")[0].value,
+            "spritesheet": emote.getElementsByClassName("emote_spritesheet")[0].value,
+            "size": [parseFloat(emote.getElementsByClassName("emote_xsize")[0].value), parseFloat(emote.getElementsByClassName("emote_ysize")[0].value)],
+            "offset": [parseFloat(emote.getElementsByClassName("emote_xoffset")[0].value), parseFloat(emote.getElementsByClassName("emote_yoffset")[0].value)],
+            "offsettype": emote.getElementsByClassName("emote_offsettype")[0].value,
+            "tags": emote.getElementsByClassName("emote_tags")[0].value,
+            "extracss": emote.getElementsByClassName("emote_extracss")[0].value
+        };
+        emote.getElementsByClassName("emote_preview")[0].setAttribute("href", "/" + emotedata["name"]);
+        emotes[emoteid] = emotedata;
+        updateCSS(false);
+    }
+    
+    function removeEmote(emoteid) { //Remove emote from HTML and emotes
+        let emote = document.getElementById(emoteid);
+        emote.parentNode.removeChild(emote);
+        delete emotes['emoteid'];
+    }
+    
+    //Import Sheets
+    function importSpritesheet() { //Imports spritesheet, asks for name, calls refreshImported
+    
+        if (this.files && this.files[0]) {
+    
+            var FR = new FileReader();
+    
+            FR.addEventListener("load", async function(e) {
+                let dimensions = await getImageDimensions(e.target.result);
+                let size = window.atob(e.target.result.split(",")[1]).length;
+                let name = prompt("Spritesheet name:", "");
+                spritesheets[name] = [e.target.result, dimensions, size];
+                refreshImported();
+            });
+    
+            FR.readAsDataURL(this.files[0]);
+        }
+    
+    }
+    
+    document.getElementById("istl").addEventListener("change", importSpritesheet);
+    
+    function removeSpritesheet(img) { //Removes spritesheet from spritesheets and calls refreshImported
+        delete spritesheets[img];
+        refreshImported();
+    }
+    
+    function refreshImported() { //Regenerates HTML that displays spritesheets
+        document.getElementById("importedSpritesheets").innerHTML = "";
+        for (let img in spritesheets) {
+            document.getElementById("importedSpritesheets").innerHTML += '<a style="cursor: pointer;" onClick="removeSpritesheet(\'' + img + '\');">❌</a><b>' + img + '</b> <span' + ( /* this part makes the filesize text red if it exceeds Reddit max 500KiB (512000 bytes)*/ (spritesheets[img][2] > 512000) ? ' style="color: #ff0000">' : '>') + Math.round(spritesheets[img][2] / 10.24) / 100 + 'KiB</span>, ' + spritesheets[img][1]['w'] + 'x' + spritesheets[img][1]['h'] + 'px<br><img src="' + spritesheets[img][0] + '" /><br>';
+        }
+        let options = document.getElementById('emotes').getElementsByClassName('emote_spritesheet');
+        for (i = 0; i < options.length; i++) {
+            options[i].innerHTML = getSelect();
+        }
+    }
+    //Save/Load features
+    function saveTags() { //Downloads all tags into a json file
+        tags = {};
+        for (let emoteid in emotes) {
+            let emote = emotes[emoteid];
+            tags[emote['name']] = [];
+            (emote['tags'] != []) ? (emote['tags'] + ",ignore").split(',').slice(0, -1).forEach(x => {
+                tags[emote['name']].push("+" + x.replace(/ |\+/g, ''))
+            }): alert("WARNING: '" + emote['name'] + "' has no tags!"); //Warns if emote has no tags - we don't want to make Typhos angry later on
+    
+        }
+        download("ponymotes.json", JSON.stringify(tags, null, 2));
+    }
+    
+    function saveCSS() { //Calls updateCSS and downloads it into a css file
+        download("ponymotes.css", updateCSS(true));
+    }
+    
+    //PMS (PonyMoteStudio) files are a format that contain the spritesheets and emotes objects in base64 format, seperated by a comma, starting with a header 'PMS,'
+    function savePMS() { //Updates all motes just in case and downloads custom PMS file
+        updateAllEmotes();
+        let pmsfile = "PMS,"
+        pmsfile += btoa(JSON.stringify(spritesheets));
+        pmsfile += ","
+        pmsfile += btoa(JSON.stringify(emotes));
+        download("ponymotes.pms", pmsfile);
+    }
+    
+    function loadPMS() { //Loads a PMS file into spritesheets and emotes and updates both the spritesheets and emotes
+    
+        if (this.files && this.files[0]) {
+    
+            var FR = new FileReader();
+    
+            FR.addEventListener("load", async function(e) {
+                let data = atob(e.target.result.split(",")[1]).split(",");
+                spritesheets = JSON.parse(atob(data[1]));
+                emotes = JSON.parse(atob(data[2]));
+                refreshImported();
+                for (let emoteid in emotes) {
+                    emote = emotes[emoteid];
+                    addEmote(emoteid, emote['name'], emote['spritesheet'], emote['size'], emote['offset'], emote['offsettype'], emote['tags'], emote['extracss']);
+                }
+                updateAllEmotes();
+            });
+    
+            FR.readAsDataURL(this.files[0]);
+        }
+    
+    }
+    
+    document.getElementById("lpms").addEventListener("change", loadPMS);
+    
+    //Other?
+    function download(filename, text) { //Downloads a plaintext file
+        var element = document.createElement('a');
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+        element.setAttribute('download', filename);
+    
+        element.style.display = 'none';
+        document.body.appendChild(element);
+    
+        element.click();
+    
+        document.body.removeChild(element);
+    }
+    
+    function getSelect() { //returns a string of options containing all the spritesheets
+        let selecthtml = "";
+        for (let img in spritesheets) {
+            selecthtml += '<option value="' + img + '">' + img + '</option>';
+        }
+        return selecthtml;
+    }
+    
+    function getImageDimensions(file) { //gets image dimensions
+        return new Promise(function(resolved, rejected) {
+            var i = new Image()
+            i.onload = function() {
+                resolved({
+                    w: i.width,
+                    h: i.height
+                })
+            };
+            i.src = file
+        })
+    }
+    
+    function updateCSS(isExport) { //Generates the CSS, isExport means we should use %%reddit_URIs%% and not update the CSS on the page itself
+        let emotecss = "";
+        let listofvalues = {};
+        let listofmotes = {};
+        //The approach I am using might seem weird, but actually results in incredibly compact CSS since reuse is minimal
+        for (let emoteid in emotes) { //Generates an object for each emote in the format obj[base64(CSS parameters)]:emotename
+            let templistofvalues = {};
+            let emote = emotes[emoteid];
+            if (!isExport) { //add ! AT START
+                templistofvalues[btoa('background-image:url("' + spritesheets[emote["spritesheet"]][0] + '")')] = emote["name"];
+            } else {
+                templistofvalues[btoa('background-image:url(%%' + emote["spritesheet"] + '%%)')] = emote["name"];
+            }
+            templistofvalues[btoa('width:' + emote["size"][0] + "px")] = emote["name"];
+            templistofvalues[btoa('height:' + emote["size"][1] + "px")] = emote["name"];
+            templistofvalues[btoa('background-position:' + emote["offset"][0] + emote["offsettype"] + ' ' + emote["offset"][1] + emote["offsettype"])] = emote["name"];
+            console.log
+            for (let ecss in emote["extracss"].split(';')) {
+                templistofvalues[btoa(emote["extracss"].split(';')[ecss])] = emote["name"];
+            }
+            for (let value in templistofvalues) {
+                if (typeof listofvalues[value] !== "undefined") { //Merges emote's object with the rest. Also we store this stuff in arrays
+                    listofvalues[value].push(templistofvalues[value]);
+                } else {
+                    listofvalues[value] = [templistofvalues[value]];
+                }
+            }
+        }
+        for (let value1 in listofvalues) { //We turn the object inside out and do the same array thing we did earlier but with base64
+            if (typeof listofmotes[btoa(listofvalues[value1])] !== "undefined") {
+                listofmotes[btoa(listofvalues[value1])].push(value1);
+            } else {
+                listofmotes[btoa(listofvalues[value1])] = [value1];
+            }
+        }
+        for (let value in listofmotes) { //Here we just generate the final CSS
+            listofmotes[value].forEach((mote, i) => {
+                listofmotes[value][i] = atob(mote)
+            });
+            emotecss += 'a[href|="/' + atob(value).split(',').join('"],a[href|="/') + '"]{' + listofmotes[value].join(';') + '}'
+        }
+    
+        if (!isExport)
+            document.getElementById("emotecss").innerHTML = emotecss;
+        return emotecss;
+    }
+    </script>
+</body>
+</html>
