@@ -35,4 +35,4 @@ It's just HTML, you can host it on a server, open it up locally or [visit my web
 * Has all the features you would ever want from it (provided you can code and it's possible to do in HTML5/JS)    
   
 ## Features I wish we had (might be implemented in the future)  
-* Uploading separate images and turning them into a stylesheet (could be done with a HTML5 canvas)
+* Uploading separate images and turning them into a spritesheet (could be done with a HTML5 canvas)
